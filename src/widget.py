@@ -7,6 +7,7 @@
 """
 
 from datetime import datetime  # noqa: F401
+
 from src.masks import get_mask_account, get_mask_card_number
 
 
@@ -19,7 +20,8 @@ def mask_account_card(info: str) -> str:
     возвращается исходная строка без изменений.
 
     Аргументы:
-        info (str): Строка вида "Visa Platinum 7000792289606361" или "Счет 73654108430135874305".
+        info (str): Строка вида "Visa Platinum 7000792289606361"
+            или "Счет 73654108430135874305".
 
     Возвращает:
         str: Строка с замаскированным номером.
@@ -27,10 +29,8 @@ def mask_account_card(info: str) -> str:
     Примеры:
         >>> mask_account_card("Visa Platinum 7000792289606361")
         'Visa Platinum 7000 79** **** 6361'
-
         >>> mask_account_card("Счет 73654108430135874305")
         'Счет **4305'
-
         >>> mask_account_card("Некорректная строка")
         'Некорректная строка'
     """
@@ -43,16 +43,14 @@ def mask_account_card(info: str) -> str:
 
     name, number = parts
 
-    # Проверяем, что вторая часть состоит только из цифр (иначе преобразование в int выдаст ошибку)
+    # Проверяем, что вторая часть состоит только из цифр
     if not number.isdigit():
         return info
 
     # Определяем тип по началу названия (без учёта регистра)
     if name.lower().startswith("счет"):
-        # Для счёта маскируем с помощью get_mask_account
         return f"{name} {get_mask_account(int(number))}"
     else:
-        # Для карты маскируем с помощью get_mask_card_number
         return f"{name} {get_mask_card_number(int(number))}"
 
 
@@ -61,7 +59,8 @@ def get_date(date_string: str) -> str:
     Преобразует строку с датой в формате ISO в формат ДД.ММ.ГГГГ.
 
     Аргументы:
-        date_string (str): Дата в формате ISO (например, "2024-03-11T02:26:18.671407").
+        date_string (str): Дата в формате ISO
+            (например, "2024-03-11T02:26:18.671407").
 
     Возвращает:
         str: Дата в формате "ДД.ММ.ГГГГ".
@@ -69,10 +68,8 @@ def get_date(date_string: str) -> str:
     Примеры:
         >>> get_date("2024-03-11T02:26:18.671407")
         '11.03.2024'
-
         >>> get_date("2025-12-31T23:59:59")
         '31.12.2025'
-
         >>> get_date("2000-01-01")
         '01.01.2000'
     """
@@ -80,5 +77,5 @@ def get_date(date_string: str) -> str:
     date_part = date_string.split("T")[0]
     # Разделяем по дефисам на год, месяц, день
     year, month, day = date_part.split("-")
-    # Возвращаем в порядке день.месяц.год
+    # Возвращаем в порядке День. Месяц. Год
     return f"{day}.{month}.{year}"
