@@ -25,26 +25,36 @@
 ---
 
 ## 🚀 Быстрый старт
-
-### 1. Клонируй репозиторий
+- Клонируй репозиторий
 
 ```bash
 git clone https://github.com/BUMbiro/bank_widget.git
 cd bank_widget
-2. Установи Poetry (если ещё нет)
-bash
+```
+
+- Установи Poetry (если ещё нет)
+
+```bash
 pip install poetry
-3. Установи зависимости
-bash
+```
+- Установи зависимости
+
+```bash
 poetry install
+```
 Проект использует только стандартные библиотеки Python + инструменты разработки (pytest, flake8, black, isort, mypy).
 
-4. Активируй окружение (опционально)
-bash
+- Активируй окружение (опционально)
+
+```bash
 poetry shell
-💡 Как этим пользоваться (живые примеры)
-🃏 Маскировка карты или счёта
-python
+```
+
+## 💡 Как этим пользоваться? (живые примеры)
+
+## 🃏 Маскировка карты или счёта
+
+```python
 from src.widget import mask_account_card
 
 print(mask_account_card("Visa Platinum 7000792289606361"))
@@ -55,14 +65,20 @@ print(mask_account_card("Счет 73654108430135874305"))
 
 print(mask_account_card("Некорректная строка"))
 # Некорректная строка (без ошибки)
-📅 Преобразование даты в удобный формат
-python
+```
+
+## 📅 Преобразование даты в удобный формат
+
+```python
 from src.widget import get_date
 
 print(get_date("2024-03-11T02:26:18.671407"))  # 11.03.2024
 print(get_date("2025-12-31T23:59:59"))         # 31.12.2025
-🔍 Фильтрация операций по статусу
-python
+```
+
+## 🔍 Фильтрация операций по статусу
+
+```python
 from src.processing import filter_by_state
 
 operations = [
@@ -76,8 +92,11 @@ print(f"Успешных операций: {len(executed)}")   # 2
 
 canceled = filter_by_state(operations, "CANCELED")
 print(f"Отменённых операций: {len(canceled)}") # 1
-📆 Сортировка операций по дате
-python
+```
+
+## 📆 Сортировка операций по дате
+
+```python
 from src.processing import sort_by_date
 
 ops = [
@@ -91,30 +110,41 @@ print([op["id"] for op in sorted_newest])        # [2, 3, 1]
 
 sorted_oldest = sort_by_date(ops, descending=False)  # по возрастанию
 print([op["id"] for op in sorted_oldest])        # [1, 3, 2]
-🧪 Тестирование
+```
+---
+## 🧪 Тестирование
 Проект покрыт тестами на 97%. Для запуска тестов и проверки покрытия используй pytest.
 
 Запуск всех тестов
-bash
+```bash
 poetry run pytest -v
+```
 Запуск с отчётом о покрытии (HTML)
-bash
+```bash
 poetry run pytest --cov=src --cov-report=html
+```
 После выполнения открой htmlcov/index.html в браузере, чтобы увидеть детальный отчёт.
 
 Структура тестов
+
+```bash
 test_masks.py – маскировка карт и счетов
-
+```
+```bash
 test_widget.py – функции mask_account_card и get_date
-
+```
+```bash
 test_processing.py – фильтрация и сортировка
-
+```
 В тестах используются фикстуры и параметризация для проверки различных кейсов.
 
-🛠️ Для разработчиков (линтеры и форматтеры)
+
+---
+
+## 🛠️️ Для разработчиков (линтеры и форматтеры)
 Если ты хочешь дорабатывать проект, вот полезные команды:
 
-bash
+```bash
 # Проверить стиль кода
 poetry run flake8 src
 
@@ -126,12 +156,17 @@ poetry run black src
 
 # Отсортировать импорты
 poetry run isort src
+```
 Все эти инструменты уже настроены в проекте (.flake8, pyproject.toml).
 
-📄 Лицензия
+---
+
+## 📄 Лицензия
 Проект распространяется под лицензией MIT. Делайте с ним что хотите, только автора упомяните 😊
 
-🙌 Благодарности
+---
+
+## 🙌 Благодарности
 Спасибо моему наставнику за ценные замечания и поддержку.
 И спасибо тебе, пользователь, что заглянул в этот проект! Если найдёшь ошибку или захочешь предложить улучшение — создавай Issue или Pull Request на GitHub.
 
