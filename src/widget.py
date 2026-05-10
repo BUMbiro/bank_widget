@@ -6,7 +6,8 @@
 - get_date: извлекает дату из ISO-строки и форматирует её как ДД.ММ.ГГГГ.
 """
 
-from datetime import datetime
+from datetime import datetime  # noqa: F401
+
 from src.masks import get_mask_account, get_mask_card_number
 
 
@@ -35,7 +36,7 @@ def mask_account_card(info: str) -> str:
         'Некорректная строка'
     """
     # Разделяем строку по последнему пробелу (тип может состоять из нескольких слов)
-    parts = info.rsplit(' ', 1)
+    parts = info.rsplit(" ", 1)
 
     # Если частей не две (нет пробела) – возвращаем исходную строку
     if len(parts) != 2:
@@ -48,7 +49,7 @@ def mask_account_card(info: str) -> str:
         return info
 
     # Определяем тип по началу названия (без учёта регистра)
-    if name.lower().startswith('счет'):
+    if name.lower().startswith("счет"):
         # Для счёта маскируем с помощью get_mask_account
         return f"{name} {get_mask_account(int(number))}"
     else:
@@ -77,8 +78,8 @@ def get_date(date_string: str) -> str:
         '01.01.2000'
     """
     # Извлекаем часть до символа 'T', если он есть, или используем всю строку
-    date_part = date_string.split('T')[0]
+    date_part = date_string.split("T")[0]
     # Разделяем по дефисам на год, месяц, день
-    year, month, day = date_part.split('-')
+    year, month, day = date_part.split("-")
     # Возвращаем в порядке день.месяц.год
     return f"{day}.{month}.{year}"

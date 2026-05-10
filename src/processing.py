@@ -6,10 +6,10 @@
 - sort_by_date: сортировка операций по дате (date).
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
-def filter_by_state(operations: List[Dict[str, Any]], state: str = 'EXECUTED') -> List[Dict[str, Any]]:
+def filter_by_state(operations: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
     """
     Фильтрует список операций по заданному статусу.
 
@@ -41,7 +41,7 @@ def filter_by_state(operations: List[Dict[str, Any]], state: str = 'EXECUTED') -
         >>> filter_by_state(data, "PENDING")
         []
     """
-    return [item for item in operations if item.get('state') == state]
+    return [item for item in operations if item.get("state") == state]
 
 
 def sort_by_date(operations: List[Dict[str, Any]], descending: bool = True) -> List[Dict[str, Any]]:
@@ -69,12 +69,16 @@ def sort_by_date(operations: List[Dict[str, Any]], descending: bool = True) -> L
         ...     {"id": 3, "date": "2023-02-01T10:00:00"}
         ... ]
         >>> sort_by_date(data)
-        [{'id': 2, 'date': '2023-03-01T10:00:00'}, {'id': 3, 'date': '2023-02-01T10:00:00'}, {'id': 1, 'date': '2023-01-01T10:00:00'}]
+        [{'id': 2, 'date': '2023-03-01T10:00:00'}
+        {'id': 3, 'date': '2023-02-01T10:00:00'}
+        {'id': 1, 'date': '2023-01-01T10:00:00'}]
 
         >>> sort_by_date(data, descending=False)
-        [{'id': 1, 'date': '2023-01-01T10:00:00'}, {'id': 3, 'date': '2023-02-01T10:00:00'}, {'id': 2, 'date': '2023-03-01T10:00:00'}]
+        [{'id': 1, 'date': '2023-01-01T10:00:00'}
+        {'id': 3, 'date': '2023-02-01T10:00:00'}
+        {'id': 2, 'date': '2023-03-01T10:00:00'}]
 
         >>> sort_by_date([])
         []
     """
-    return sorted(operations, key=lambda x: x.get('date', ''), reverse=descending)
+    return sorted(operations, key=lambda x: x.get("date", ""), reverse=descending)
