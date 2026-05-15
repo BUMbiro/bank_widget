@@ -8,6 +8,7 @@
 - 📅 **Превращать** технические даты в человеческий формат `ДД.ММ.ГГГГ`
 - 🔍 **Фильтровать** операции по статусу (`EXECUTED`, `CANCELED`, `PENDING`)
 - 📆 **Сортировать** историю по дате (от новых к старым или наоборот)
+- 📦 **Обрабатывать транзакции с помощью генераторов** (экономия памяти)
 
 Проект написан в учебных целях, но код полностью рабочий и может использоваться в реальных банковских приложениях.
 
@@ -112,6 +113,67 @@ sorted_oldest = sort_by_date(ops, descending=False)  # по возрастани
 print([op["id"] for op in sorted_oldest])        # [1, 3, 2]
 ```
 ---
+
+## 📦 Генераторы для работы с транзакциями
+В реальной жизни аналитикам часто приходится перебирать тысячи транзакций. Хранить всё сразу в памяти — накладно. Генераторы приходят на помощь: они выдают данные по одному, экономя ресурсы. В модуле src.generators мы сделали три удобных генератора.
+
+🔍 filter_by_currency – фильтр по валюте
+
+Хотите посмотреть только долларовые переводы? Пожалуйста!
+
+```python
+from src.generators import filter_by_currency
+
+transactions = [
+    {"id": 1, "operationAmount": {"currency": {"code": "USD"}}, "description": "Перевод организации"},
+    {"id": 2, "operationAmount": {"currency": {"code": "USD"}}, "description": "Перевод со счета на счет"},
+    {"id": 3, "operationAmount": {"currency": {"code": "RUB"}}, "description": "Перевод с карты на карту"},
+]
+
+usd_transactions = filter_by_currency(transactions, "USD")
+print(next(usd_transactions)["description"])  # Перевод организации
+print(next(usd_transactions)["description"])  # Перевод со счета на счет
+```
+
+📝 transaction_descriptions – только описания
+
+Если нужно быстро пробежаться по описаниям операций (например, для поиска ключевых слов), этот генератор сделает всё за вас.
+
+```python
+from src.generators import transaction_descriptions
+
+transactions = [
+    {"id": 1, "description": "Перевод организации"},
+    {"id": 2, "description": "Перевод со счета на счет"},
+    {"id": 3, "description": "Перевод с карты на карту"},
+]
+
+descriptions = transaction_descriptions(transactions)
+print(next(descriptions))
+print(next(descriptions))
+print(next(descriptions))
+```
+
+💳 card_number_generator – номера карт в диапазоне
+
+Пригодится для тестирования или симуляции данных. Генератор выдаёт номера карт в формате XXXX XXXX XXXX XXXX от start до stop включительно.
+
+```python
+from src.generators import card_number_generator
+
+for card in card_number_generator(1, 3):
+    print(card)
+# 0000 0000 0000 0001
+# 0000 0000 0000 0002
+# 0000 0000 0000 0003
+```
+
+Можно генерировать и большие диапазоны, хоть до 9999 9999 9999 9999.
+
+---
+Все эти функции покрыты тестами (pytest), используют фикстуры и параметризацию. Код лежит в src/generators.py, а тесты – в tests/test_generators.py. Если хочешь добавить свои валюты или расширить функциональность – смело форкай!
+
+---
 ## 🧪 Тестирование
 Проект покрыт тестами на 97%. Для запуска тестов и проверки покрытия используй pytest.
 
@@ -138,6 +200,16 @@ test_processing.py – фильтрация и сортировка
 ```
 В тестах используются фикстуры и параметризация для проверки различных кейсов.
 
+---
+
+Тестирование генераторов (дополнение к разделу)
+В разделе тестирования можно добавить, что:
+
+Filter_by_currency проверена на валюты USD, RUB, EUR (последняя даёт пустой итератор).
+
+Transaction_descriptions корректно отрабатывает даже на пустом списке.
+
+Card_number_generator проверен на граничных значениях (0, 1, 9999999999999999) и на форматировании.
 
 ---
 
@@ -158,6 +230,8 @@ poetry run black src
 poetry run isort src
 ```
 Все эти инструменты уже настроены в проекте (.flake8, pyproject.toml).
+
+---
 
 ---
 
