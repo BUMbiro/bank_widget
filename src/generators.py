@@ -31,5 +31,5 @@ def card_number_generator(start: int, stop: int) -> Iterator[str]:
         # Форматируем число в строку с ведущими нулями до 16 цифр
         card_str = f"{number:016d}"
         # Разбиваем на группы по 4 цифры
-        formatted = " ".join([card_str[i:i+4] for i in range(0, 16, 4)])
+        formatted = " ".join([card_str[i:i + 4] for i in range(0, 16, 4)])
         yield formatted
