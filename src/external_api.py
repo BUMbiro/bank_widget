@@ -45,6 +45,6 @@ def convert_currency(transaction: Dict[str, Any]) -> float:
         rate = data.get("rates", {}).get("RUB")
         if rate is None:
             return 0.0
-        return amount * rate
+        return float(amount * rate)
     except (requests.RequestException, KeyError, ValueError):
         return 0.0
