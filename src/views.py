@@ -133,7 +133,7 @@ def main_page(date_str: str, transactions: List[Dict[str, Any]]) -> Dict[str, An
     с начала месяца по указанную дату.
     """
     filtered = filter_transactions_by_date_range(transactions, date_str)
-    with open('user_settings.json', 'r', encoding='utf-8') as f:
+    with open('user_settings.json', 'r', encoding='utf-8-sig') as f:
         settings = json.load(f)
     currencies = settings.get('user_currencies', [])
     stocks = settings.get('user_stocks', [])
