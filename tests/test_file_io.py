@@ -1,5 +1,7 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pandas as pd
+
 from src.file_io import read_transactions_from_csv, read_transactions_from_excel
 
 

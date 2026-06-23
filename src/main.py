@@ -2,14 +2,15 @@
 Главный модуль приложения для работы с банковскими транзакциями.
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+from src.file_io import read_transactions_from_csv, read_transactions_from_excel
+from src.processing import filter_by_state, sort_by_date
+from src.search_utils import search_transactions
 
 # Импорт существующих функций
 from src.utils import get_transactions_from_json
-from src.file_io import read_transactions_from_csv, read_transactions_from_excel
-from src.processing import filter_by_state, sort_by_date
 from src.widget import get_date, mask_account_card
-from src.search_utils import search_transactions
 
 
 def load_transactions(source: int) -> List[Dict[str, Any]]:
@@ -35,10 +36,14 @@ def get_valid_status() -> str:
     """Запрашивает статус, пока не будет введён корректный."""
     valid_statuses = ["EXECUTED", "CANCELED", "PENDING"]
     while True:
-        status = input(
-            "Введите статус, по которому необходимо выполнить фильтрацию.\n"
-            "Доступные для фильтровки статусы: EXECUTED, CANCELED, PENDING\n"
-        ).strip().upper()
+        status = (
+            input(
+                "Введите статус, по которому необходимо выполнить фильтрацию.\n"
+                "Доступные для фильтровки статусы: EXECUTED, CANCELED, PENDING\n"
+            )
+            .strip()
+            .upper()
+        )
         if status in valid_statuses:
             print(f'Операции отфильтрованы по статусу "{status}"')
             return status
@@ -62,7 +67,7 @@ def get_sort_order() -> bool:
     while True:
         order = input("Отсортировать по возрастанию или по убыванию? ").strip().lower()
         if order in ("по убыванию", "убывание", "desc", "убыв"):
-            return True   # descending
+            return True  # descending
         if order in ("по возрастанию", "возрастание", "asc", "возр"):
             return False  # ascending
         print("Введите 'по возрастанию' или 'по убыванию'.")
@@ -103,7 +108,7 @@ def main() -> None:
     print("2. Получить информацию о транзакциях из CSV-файла")
     print("3. Получить информацию о транзакциях из XLSX-файла")
     choice = input().strip()
-    while choice not in ('1', '2', '3'):
+    while choice not in ("1", "2", "3"):
         print("Пожалуйста, выберите 1, 2 или 3.")
         choice = input().strip()
     transactions = load_transactions(int(choice))
@@ -119,8 +124,7 @@ def main() -> None:
         filtered = sort_by_date(filtered, descending=descending)
 
     if get_boolean_input("Выводить только рублевые транзакции? Да/Нет\n"):
-        filtered = [tx for tx in filtered
-                    if tx.get("operationAmount", {}).get("currency", {}).get("code") == "RUB"]
+        filtered = [tx for tx in filtered if tx.get("operationAmount", {}).get("currency", {}).get("code") == "RUB"]
 
     if get_boolean_input("Отфильтровать список транзакций по определенному слову в описании? Да/Нет\n"):
         search_word = input("Введите слово или фразу для поиска: ").strip()

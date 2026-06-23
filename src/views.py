@@ -6,12 +6,12 @@
 import json
 import os
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 import requests
 from dotenv import load_dotenv
 
-from src.utils import read_transactions_from_excel, filter_transactions_by_date_range
+from src.utils import filter_transactions_by_date_range, read_transactions_from_excel
 
 # Загружаем переменные окружения из .env
 load_dotenv()
@@ -37,26 +37,28 @@ def get_cards_info(transactions: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     cards = {}
     for tx in transactions:
-        card_num = tx.get('Номер карты')
+        card_num = tx.get("Номер карты")
         if not card_num:
             continue
         last_digits = str(card_num)[-4:]
-        amount = tx.get('Сумма операции', 0)
+        amount = tx.get("Сумма операции", 0)
         # Учитываем только расходы (положительные суммы)
         if amount > 0:
             spent = amount
             cashback = spent / 100
             if last_digits not in cards:
-                cards[last_digits] = {'total_spent': 0, 'cashback': 0}
-            cards[last_digits]['total_spent'] += spent
-            cards[last_digits]['cashback'] += cashback
+                cards[last_digits] = {"total_spent": 0, "cashback": 0}
+            cards[last_digits]["total_spent"] += spent
+            cards[last_digits]["cashback"] += cashback
     result_list = []
     for last_digits, data in cards.items():
-        result_list.append({
-            'last_digits': last_digits,
-            'total_spent': round(data['total_spent'], 2),
-            'cashback': round(data['cashback'], 2)
-        })
+        result_list.append(
+            {
+                "last_digits": last_digits,
+                "total_spent": round(data["total_spent"], 2),
+                "cashback": round(data["cashback"], 2),
+            }
+        )
     return result_list
 
 
@@ -64,35 +66,30 @@ def get_top_transactions(transactions: List[Dict[str, Any]], n: int = 5) -> List
     """
     Возвращает топ-N транзакций по сумме платежа (по убыванию).
     """
-    sorted_tx = sorted(transactions, key=lambda x: abs(x.get('Сумма операции', 0)), reverse=True)
+    sorted_tx = sorted(transactions, key=lambda x: abs(x.get("Сумма операции", 0)), reverse=True)
     top = []
     for tx in sorted_tx[:n]:
-        date_str = tx.get('Дата операции')
+        date_str = tx.get("Дата операции")
         if date_str:
             try:
                 if isinstance(date_str, datetime):
                     date_obj = date_str
                 else:
-                    date_obj = datetime.strptime(str(date_str), '%Y-%m-%d')
-                formatted_date = date_obj.strftime('%d.%m.%Y')
+                    date_obj = datetime.strptime(str(date_str), "%Y-%m-%d")
+                formatted_date = date_obj.strftime("%d.%m.%Y")
             except (ValueError, TypeError):
                 formatted_date = str(date_str)
         else:
-            formatted_date = ''
-        amount = tx.get('Сумма операции', 0)
-        category = tx.get('Категория', '')
-        description = tx.get('Описание', '')
-        top.append({
-            'date': formatted_date,
-            'amount': amount,
-            'category': category,
-            'description': description
-        })
+            formatted_date = ""
+        amount = tx.get("Сумма операции", 0)
+        category = tx.get("Категория", "")
+        description = tx.get("Описание", "")
+        top.append({"date": formatted_date, "amount": amount, "category": category, "description": description})
     return top
 
 
 def get_currency_rates(currencies: List[str]) -> List[Dict[str, Any]]:
-    api_key = os.getenv('EXCHANGE_RATE_API_KEY')
+    api_key = os.getenv("EXCHANGE_RATE_API_KEY")
     rates = []
     for cur in currencies:
         rate = 0.0
@@ -102,15 +99,15 @@ def get_currency_rates(currencies: List[str]) -> List[Dict[str, Any]]:
                 response = requests.get(url, timeout=5)
                 response.raise_for_status()
                 data = response.json()
-                rate = data.get('conversion_rates', {}).get('RUB', 0.0)
+                rate = data.get("conversion_rates", {}).get("RUB", 0.0)
             except (requests.RequestException, KeyError, ValueError):
                 pass
-        rates.append({'currency': cur, 'rate': rate})
+        rates.append({"currency": cur, "rate": rate})
     return rates
 
 
 def get_stock_prices(stocks: List[str]) -> List[Dict[str, Any]]:
-    api_key = os.getenv('ALPHA_VANTAGE_API_KEY')
+    api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
     prices = []
     for stock in stocks:
         price = 0.0
@@ -120,10 +117,10 @@ def get_stock_prices(stocks: List[str]) -> List[Dict[str, Any]]:
                 response = requests.get(url, timeout=5)
                 response.raise_for_status()
                 data = response.json()
-                price = float(data['Global Quote']['05. price'])
+                price = float(data["Global Quote"]["05. price"])
             except (requests.RequestException, KeyError, ValueError, TypeError):
                 pass
-        prices.append({'stock': stock, 'price': price})
+        prices.append({"stock": stock, "price": price})
     return prices
 
 
@@ -133,10 +130,10 @@ def main_page(date_str: str, transactions: List[Dict[str, Any]]) -> Dict[str, An
     с начала месяца по указанную дату.
     """
     filtered = filter_transactions_by_date_range(transactions, date_str)
-    with open('user_settings.json', 'r', encoding='utf-8-sig') as f:
+    with open("user_settings.json", "r", encoding="utf-8-sig") as f:
         settings = json.load(f)
-    currencies = settings.get('user_currencies', [])
-    stocks = settings.get('user_stocks', [])
+    currencies = settings.get("user_currencies", [])
+    stocks = settings.get("user_stocks", [])
 
     greeting = get_greeting()
     cards = get_cards_info(filtered)
@@ -149,7 +146,7 @@ def main_page(date_str: str, transactions: List[Dict[str, Any]]) -> Dict[str, An
         "cards": cards,
         "top_transactions": top,
         "currency_rates": currency_rates,
-        "stock_prices": stock_prices
+        "stock_prices": stock_prices,
     }
 
 
